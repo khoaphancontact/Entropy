@@ -1,11 +1,11 @@
 STEP 2 — VAULT MODELS IMPLEMENTATION GUIDE
 
 MILESTONES:
-[] Milestone A — Vault File Header + Versioning
-[] Milestone B — VaultEntry + EntryFieldTypes
+[x] Milestone A — Vault File Header + Versioning
+[x] Milestone B — VaultEntry + VaultEntryMetadata + EntryFieldTypes
 [] Milestone C — VaultFolder Structure
 [] Milestone D — OTPBlock Model
-[] Milestone E — DecryptedVault + DecryptedVaultEntry
+[] Milestone E — DecryptedVault + DecryptedVaultEntryåç
 [] Milestone F — VaultSerialization (encode/decode)
 [] Milestone G — VaultModelV1 (Full On-Disk Format)
 [] Milestone H — VaultEntrySecurityInfo (Score)
@@ -33,6 +33,7 @@ VaultModels/
     VaultModelV1.swift
     VaultFolder.swift
     VaultEntry.swift
+    VaultEntryMetadata.swift
     OTPBlock.swift
     DecryptedVault.swift
     DecryptedVaultEntry.swift
@@ -107,31 +108,49 @@ missing fields reject
 Define the encrypted model for each vault item:
 VaultEntry
 EntryFieldTypes
-encrypted username
-encrypted password
-encrypted notes (optional)
-encrypted OTPBlock
+VaultEntryMetadata
 
-Each field contains:
-VaultCiphertext (from SecurityKit)
+VaultEntryMetadata
+    Encrypted Codable struct containing:
+        lastCopiedUsername: Date?
+        lastCopiedPassword: Date?
+        lastUsedOTP: Date?
+        lastViewed: Date?
+
+Each encrypted field contains:
+VaultCiphertext
 metadata (createdAt, updatedAt)
-optional securityInfo field reference
+optional securityInfo reference
 
-Requirements:
-• No decrypted fields
-• All fields encrypted independently
-• UUID for the entry
-• Codable, fully versioned
-• Compatible with partial decryption:
+Fields inside VaultEntry:
+    encrypted username
+    encrypted password
+    encrypted notes (optional)
+    encrypted OTPBlock (via otpBlockID)
+    encrypted metadata block (optional)
+        stores usage-related timestamps:
+            lastCopiedUsername
+            lastCopiedPassword
+            lastUsedOTP
+            lastViewed
+
+Requirements (updated):
+    No decrypted fields in VaultEntry
+    All sensitive fields, including metadata, encrypted independently
+    UUID for entry
+    Codable, fully versioned
+    Compatible with partial decryption:
     decrypt username only
     decrypt password only
     decrypt OTP only
+    decrypt metadata only ← NEW
 
-Tests:
-Entry encode/decode
-Missing ciphertext rejects
-Invalid nonce rejects
-Partial decrypt helpers work with mock VaultEncryption
+Tests (updated):
+    Entry encode/decode
+    Missing ciphertext rejects
+    Invalid nonce rejects
+    Metadata encode/decode + corruption rejection
+    Partial decrypt helpers work with mock VaultEncryption
 
 ✔️ Milestone C — VaultFolder Structure
 

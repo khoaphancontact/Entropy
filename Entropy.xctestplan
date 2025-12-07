@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "13A75D7B-FEFE-46C8-A3AD-B6F7A7426D11",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Entropy.xcodeproj",
+      "identifier" : "B0BCFE562EE418410071DD5C",
+      "name" : "Entropy"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Entropy.xcodeproj",
+        "identifier" : "B0BCFEA22EE41D020071DD5C",
+        "name" : "EntropyTests"
+      }
+    }
+  ],
+  "version" : 1
+}
