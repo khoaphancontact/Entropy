@@ -2,32 +2,30 @@
 //  Argon2.swift
 //  Entropy
 //
-//  Created by Khoa Phan (Home) on 12/5/25.
-//
-
-//
 //  High-level Argon2id wrapper for password-based key derivation.
-//  Uses the Argon2 C library via CArgon2 module.
+//  Uses the Argon2 C library via a bridging header.
 //
-//  This file assumes you have:
-//  - Added the Argon2 C library (phc-winner-argon2) to your project
-//  - Exposed it as a Swift module named `CArgon2`
-//  - Have `argon2.h` available with `argon2id_hash_raw` symbol
+//  Requirements:
+//  - Add Argon2 C library sources (from PHC winner repo) to the project
+//  - Add argon2.h to bridging header
+//  - Ensure argon2id_hash_raw(...) is visible from Swift
+//  - Ensure Argon2_ErrorCodes is bridged as an enum from argon2.h
 //
 
 import Foundation
-import CArgon2   // <- If your module is named differently, change this line.
+
+// MARK: - Public Parameter Structure
 
 public struct Argon2Params: Equatable, Sendable {
     /// Memory cost in KiB (e.g. 64_000 to 128_000).
     public let memoryKiB: Int
-    /// Time cost (number of iterations, e.g. 2 to 3).
+    /// Time cost (iterations).
     public let iterations: Int
-    /// Degree of parallelism (e.g. 2 to 4).
+    /// Degree of parallelism (threads).
     public let parallelism: Int
     /// Salt length in bytes (typically 16 to 32).
     public let saltLength: Int
-    /// Output key length in bytes (for master key, 32).
+    /// Output key length in bytes (normally 32 for a master key).
     public let outputLength: Int
 
     public init(
@@ -45,20 +43,19 @@ public struct Argon2Params: Equatable, Sendable {
     }
 }
 
-public enum Argon2Error: Error {
+// MARK: - Error Definitions
+
+public enum Argon2Error: Error, Equatable {
     case invalidParams
     case invalidSaltLength
     case derivationFailed(code: Int32)
 }
 
-/// High-level Argon2id wrapper.
-/// - Provides two main APIs:
-///   - derive(password:params:) -> (key, salt)
-///   - derive(password:salt:params:) -> key
+// MARK: - Main Wrapper API
+
 public enum Argon2 {
 
-    /// Derive a key using a fresh random salt.
-    /// - Returns: (derived key, random salt)
+    /// Derive a key using a randomly generated salt.
     public static func derive(password: Data, params: Argon2Params) throws -> (key: Data, salt: Data) {
         try validate(params: params)
         let salt = try SecureRandom.bytes(count: params.saltLength)
@@ -66,7 +63,7 @@ public enum Argon2 {
         return (key, salt)
     }
 
-    /// Derive a key using a provided salt (for verify/unlock).
+    /// Derive a key using an existing salt (for unlocking a vault).
     public static func derive(password: Data, salt: Data, params: Argon2Params) throws -> Data {
         try validate(params: params)
         guard salt.count == params.saltLength else {
@@ -75,69 +72,61 @@ public enum Argon2 {
         return try argon2id(password: password, salt: salt, params: params)
     }
 
-    // MARK: - Internal validation
+    // MARK: - Parameter validation
 
     private static func validate(params: Argon2Params) throws {
-        // Conservative bounds that match the Step 1 security guide.
-        let memoryOK = params.memoryKiB >= 32_768   // 32 MiB minimum; recommended 64–128 MiB
+        // Matches Step 1 guidelines
+        let memoryOK = params.memoryKiB >= 32_768        // 32 MiB minimum
         let itersOK  = params.iterations >= 1
         let parOK    = params.parallelism >= 1
         let saltOK   = (16...32).contains(params.saltLength)
-        let outOK    = params.outputLength == 32    // We expect 32-byte master keys
+        let outOK    = params.outputLength == 32          // we expect a 32-byte master key
 
         guard memoryOK, itersOK, parOK, saltOK, outOK else {
             throw Argon2Error.invalidParams
         }
     }
 
-    // MARK: - Argon2id core
+    // MARK: - Actual Argon2id Worker
 
     private static func argon2id(password: Data, salt: Data, params: Argon2Params) throws -> Data {
-        var output = Data(count: params.outputLength)
+        let outputLength = params.outputLength
 
-        let result: Int32 = output.withUnsafeMutableBytes { outPtr in
-            let outBuf = outPtr.bindMemory(to: UInt8.self).baseAddress!
+        // Allocate secure output buffer
+        let outPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: outputLength)
+        defer { outPtr.deallocate() }
 
-            return password.withUnsafeBytes { pwPtr in
-                let pwBuf = pwPtr.bindMemory(to: UInt8.self).baseAddress!
+        // Call Argon2 through bridging header
+        let result: Argon2_ErrorCodes = password.withUnsafeBytes { pwPtr in
+            guard let pwBuf = pwPtr.baseAddress else { return ARGON2_PWD_TOO_SHORT }
 
-                return salt.withUnsafeBytes { saltPtr in
-                    let saltBuf = saltPtr.bindMemory(to: UInt8.self).baseAddress!
+            return salt.withUnsafeBytes { saltPtr in
+                guard let saltBuf = saltPtr.baseAddress else { return ARGON2_SALT_TOO_SHORT }
 
-                    return argon2idHashRaw(
-                        iterations: UInt32(params.iterations),
-                        memoryKiB: UInt32(params.memoryKiB),
-                        parallelism: UInt32(params.parallelism),
-                        password: pwBuf, passwordLen: password.count,
-                        salt: saltBuf, saltLen: salt.count,
-                        output: outBuf, outputLen: output.count
-                    )
-                }
+                return argon2idHashRaw(
+                    iterations: UInt32(params.iterations),
+                    memoryKiB: UInt32(params.memoryKiB),
+                    parallelism: UInt32(params.parallelism),
+                    password: pwBuf, passwordLen: password.count,
+                    salt: saltBuf, saltLen: salt.count,
+                    output: UnsafeMutableRawPointer(outPtr), outputLen: outputLength
+                )
             }
         }
 
+        // Validate return code
         guard result == ARGON2_OK else {
-            throw Argon2Error.derivationFailed(code: result)
+            throw Argon2Error.derivationFailed(code: Int32(result.rawValue))
         }
 
-        return output
+        // Copy derived key into Swift Data
+        return Data(bytes: outPtr, count: outputLength)
     }
 }
 
-// MARK: - Argon2 C binding
+// MARK: - C Binding
 
-/// Thin wrapper around the C Argon2id function.
-/// Expects:
-/// - iterations: time cost
-/// - memoryKiB: memory cost in KiB
-/// - parallelism: lanes
-/// - password: raw pointer to password bytes
-/// - salt: raw pointer to salt bytes
-/// - output: raw pointer to output buffer (already allocated)
-///
-/// Returns:
-/// - 0 (ARGON2_OK) on success
-/// - non-zero error code on failure
+/// Thin wrapper around argon2id_hash_raw from argon2.h via bridging header.
 @inline(__always)
 private func argon2idHashRaw(
     iterations: UInt32,
@@ -146,9 +135,7 @@ private func argon2idHashRaw(
     password: UnsafeRawPointer, passwordLen: Int,
     salt: UnsafeRawPointer, saltLen: Int,
     output: UnsafeMutableRawPointer, outputLen: Int
-) -> Int32 {
-    // Crypto parameters from our wrapper are already validated.
-    // We just forward to the C API and let it return a status code.
+) -> Argon2_ErrorCodes {
     let result = argon2id_hash_raw(
         iterations,
         memoryKiB,
@@ -160,5 +147,8 @@ private func argon2idHashRaw(
         output,
         outputLen
     )
-    return result
+
+    // Map numeric return code into Argon2_ErrorCodes enum
+    return Argon2_ErrorCodes(rawValue: result) ?? ARGON2_OK
 }
+

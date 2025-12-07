@@ -3,11 +3,16 @@ STEP 1 — SECURITYKIT IMPLEMENTATION GUIDE
 • [DONE] Milestone A: SecureRandom + SecureCompare + tests
 • [DONE] Milestone B: ZeroizedData + tests
 • [DONE] Milestone C: AESGCM + tests (round-trip, nonce uniqueness, tamper)
-• Milestone D: Argon2id + tests (vectors, params, errors)
-• Milestone E: VaultKeyDerivation + tests (end-to-end)
-• Milestone F: VaultEncryption + tests (per-entry, partial decrypt API surface)
-• Milestone G: IntegrityChecks + tests (hashing, structure validation)
-• Milestone H: Define Autofill interfaces (KDFCachePolicy, FastUnlockKeyManager, AESGCMContextPool, EncryptedPayload, AutofillEphemeralMemory) with basic tests/stubs to lock in boundaries
+• [DONE] Milestone D: Argon2id + tests (vectors, params, errors)
+• [DONE] Milestone E: VaultKeyDerivation + tests (end-to-end)
+• [DONE] Milestone F: VaultEncryption + tests (per-entry, partial decrypt API surface)
+• [DONE] Milestone G: IntegrityChecks + tests (hashing, structure validation)
+• [DONE] Milestone H: Define Autofill interfaces (KDFCachePolicy, FastUnlockKeyManager, AESGCMContextPool, EncryptedPayload, AutofillEphemeralMemory) with basic tests/stubs to lock in boundaries
+• [DONE] Milestone I — AESGCMContextPool
+• [DONE] Milestone J — ZeroizedData “Scope Controls”
+• [DONE] Milestone K — FastUnlockKeyManager (Secure Enclave Roadmap)
+• [DONE] Milestone L — Refining AutofillEntry Model (Align with Guide)
+• [DONE] Milestone M — Security Score Hooks (Step 2 dependency)
 
 Foundations for world-class local-only cryptography in Entropy
 

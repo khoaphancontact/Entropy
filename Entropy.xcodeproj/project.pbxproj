@@ -6,14 +6,59 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B0BCFEC12EE427930071DD5C /* argon2.c in Sources */ = {isa = PBXBuildFile; fileRef = B0BCFEC02EE427930071DD5C /* argon2.c */; };
+		B0BCFEC22EE427930071DD5C /* argon2.c in Sources */ = {isa = PBXBuildFile; fileRef = B0BCFEC02EE427930071DD5C /* argon2.c */; };
+		B0BCFECD2EE427F30071DD5C /* core.c in Sources */ = {isa = PBXBuildFile; fileRef = B0BCFECA2EE427F30071DD5C /* core.c */; };
+		B0BCFECE2EE427F30071DD5C /* thread.c in Sources */ = {isa = PBXBuildFile; fileRef = B0BCFECC2EE427F30071DD5C /* thread.c */; };
+		B0BCFECF2EE427F30071DD5C /* core.c in Sources */ = {isa = PBXBuildFile; fileRef = B0BCFECA2EE427F30071DD5C /* core.c */; };
+		B0BCFED02EE427F30071DD5C /* thread.c in Sources */ = {isa = PBXBuildFile; fileRef = B0BCFECC2EE427F30071DD5C /* thread.c */; };
+		B0BCFED72EE428230071DD5C /* ref.c in Sources */ = {isa = PBXBuildFile; fileRef = B0BCFED62EE428230071DD5C /* ref.c */; };
+		B0BCFED82EE428230071DD5C /* ref.c in Sources */ = {isa = PBXBuildFile; fileRef = B0BCFED62EE428230071DD5C /* ref.c */; };
+		B0BCFEDE2EE4BEC20071DD5C /* encoding.c in Sources */ = {isa = PBXBuildFile; fileRef = B0BCFEDD2EE4BEC20071DD5C /* encoding.c */; };
+		B0BCFEDF2EE4BEC20071DD5C /* encoding.c in Sources */ = {isa = PBXBuildFile; fileRef = B0BCFEDD2EE4BEC20071DD5C /* encoding.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B0BCFEA72EE41D020071DD5C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B0BCFE4F2EE418410071DD5C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B0BCFE562EE418410071DD5C;
+			remoteInfo = Entropy;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		B0BCFE572EE418410071DD5C /* Entropy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Entropy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B0BCFEA32EE41D020071DD5C /* EntropyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EntropyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B0BCFEC02EE427930071DD5C /* argon2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = argon2.c; sourceTree = "<group>"; };
+		B0BCFEC32EE4279E0071DD5C /* Entropy-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Entropy-Bridging-Header.h"; sourceTree = "<group>"; };
+		B0BCFEC42EE4279E0071DD5C /* EntropyTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EntropyTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		B0BCFEC92EE427F30071DD5C /* core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
+		B0BCFECA2EE427F30071DD5C /* core.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = core.c; sourceTree = "<group>"; };
+		B0BCFECB2EE427F30071DD5C /* thread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = thread.h; sourceTree = "<group>"; };
+		B0BCFECC2EE427F30071DD5C /* thread.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = thread.c; sourceTree = "<group>"; };
+		B0BCFED52EE428140071DD5C /* argon2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = argon2.h; sourceTree = "<group>"; };
+		B0BCFED62EE428230071DD5C /* ref.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ref.c; sourceTree = "<group>"; };
+		B0BCFEDC2EE4BEC20071DD5C /* encoding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = encoding.h; sourceTree = "<group>"; };
+		B0BCFEDD2EE4BEC20071DD5C /* encoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = encoding.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B0BCFE592EE418410071DD5C /* Entropy */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Entropy;
+			sourceTree = "<group>";
+		};
+		B0BCFEA42EE41D020071DD5C /* EntropyTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = EntropyTests;
+			sourceTree = "<group>";
+		};
+		B0BCFEE12EE4BF600071DD5C /* blake2 */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = blake2;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -26,14 +71,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B0BCFEA02EE41D020071DD5C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		B0BCFE4E2EE418410071DD5C = {
 			isa = PBXGroup;
 			children = (
-				B0BCFE592EE418410071DD5C /* Entropy */,
+				B0BCFEBF2EE427630071DD5C /* Argon2 */,
+				B0BCFEA42EE41D020071DD5C /* EntropyTests */,
 				B0BCFE582EE418410071DD5C /* Products */,
+				B0BCFE592EE418410071DD5C /* Entropy */,
 			);
 			sourceTree = "<group>";
 		};
@@ -41,8 +95,28 @@
 			isa = PBXGroup;
 			children = (
 				B0BCFE572EE418410071DD5C /* Entropy.app */,
+				B0BCFEA32EE41D020071DD5C /* EntropyTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B0BCFEBF2EE427630071DD5C /* Argon2 */ = {
+			isa = PBXGroup;
+			children = (
+				B0BCFEE12EE4BF600071DD5C /* blake2 */,
+				B0BCFEC02EE427930071DD5C /* argon2.c */,
+				B0BCFEC32EE4279E0071DD5C /* Entropy-Bridging-Header.h */,
+				B0BCFEC42EE4279E0071DD5C /* EntropyTests-Bridging-Header.h */,
+				B0BCFEC92EE427F30071DD5C /* core.h */,
+				B0BCFECA2EE427F30071DD5C /* core.c */,
+				B0BCFECB2EE427F30071DD5C /* thread.h */,
+				B0BCFECC2EE427F30071DD5C /* thread.c */,
+				B0BCFED52EE428140071DD5C /* argon2.h */,
+				B0BCFED62EE428230071DD5C /* ref.c */,
+				B0BCFEDC2EE4BEC20071DD5C /* encoding.h */,
+				B0BCFEDD2EE4BEC20071DD5C /* encoding.c */,
+			);
+			path = Argon2;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -62,6 +136,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				B0BCFE592EE418410071DD5C /* Entropy */,
+				B0BCFEE12EE4BF600071DD5C /* blake2 */,
 			);
 			name = Entropy;
 			packageProductDependencies = (
@@ -69,6 +144,30 @@
 			productName = Entropy;
 			productReference = B0BCFE572EE418410071DD5C /* Entropy.app */;
 			productType = "com.apple.product-type.application";
+		};
+		B0BCFEA22EE41D020071DD5C /* EntropyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B0BCFEA92EE41D020071DD5C /* Build configuration list for PBXNativeTarget "EntropyTests" */;
+			buildPhases = (
+				B0BCFE9F2EE41D020071DD5C /* Sources */,
+				B0BCFEA02EE41D020071DD5C /* Frameworks */,
+				B0BCFEA12EE41D020071DD5C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B0BCFEA82EE41D020071DD5C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				B0BCFEA42EE41D020071DD5C /* EntropyTests */,
+				B0BCFEE12EE4BF600071DD5C /* blake2 */,
+			);
+			name = EntropyTests;
+			packageProductDependencies = (
+			);
+			productName = EntropyTests;
+			productReference = B0BCFEA32EE41D020071DD5C /* EntropyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -82,6 +181,12 @@
 				TargetAttributes = {
 					B0BCFE562EE418410071DD5C = {
 						CreatedOnToolsVersion = 26.1.1;
+						LastSwiftMigration = 2610;
+					};
+					B0BCFEA22EE41D020071DD5C = {
+						CreatedOnToolsVersion = 26.1.1;
+						LastSwiftMigration = 2610;
+						TestTargetID = B0BCFE562EE418410071DD5C;
 					};
 				};
 			};
@@ -100,12 +205,20 @@
 			projectRoot = "";
 			targets = (
 				B0BCFE562EE418410071DD5C /* Entropy */,
+				B0BCFEA22EE41D020071DD5C /* EntropyTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		B0BCFE552EE418410071DD5C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B0BCFEA12EE41D020071DD5C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -119,10 +232,35 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B0BCFEC12EE427930071DD5C /* argon2.c in Sources */,
+				B0BCFED72EE428230071DD5C /* ref.c in Sources */,
+				B0BCFEDE2EE4BEC20071DD5C /* encoding.c in Sources */,
+				B0BCFECF2EE427F30071DD5C /* core.c in Sources */,
+				B0BCFED02EE427F30071DD5C /* thread.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B0BCFE9F2EE41D020071DD5C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B0BCFED82EE428230071DD5C /* ref.c in Sources */,
+				B0BCFEC22EE427930071DD5C /* argon2.c in Sources */,
+				B0BCFEDF2EE4BEC20071DD5C /* encoding.c in Sources */,
+				B0BCFECD2EE427F30071DD5C /* core.c in Sources */,
+				B0BCFECE2EE427F30071DD5C /* thread.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B0BCFEA82EE41D020071DD5C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B0BCFE562EE418410071DD5C /* Entropy */;
+			targetProxy = B0BCFEA72EE41D020071DD5C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		B0BCFE602EE418420071DD5C /* Debug */ = {
@@ -246,6 +384,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7988L8J3ZQ;
@@ -254,6 +393,10 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Entropy/Argon2/blake2/**",
+					"$(PROJECT_DIR)/Entropy/Argon2/**",
+				);
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -269,6 +412,10 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.1;
 				MARKETING_VERSION = 1.0;
+				OTHER_CFLAGS = (
+					"-D_POSIX_THREADS",
+					"-DNO_AVX2",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.prism.Entropy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -278,6 +425,8 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Argon2/Entropy-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
@@ -290,6 +439,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7988L8J3ZQ;
@@ -298,6 +448,10 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Entropy/Argon2/blake2/**",
+					"$(PROJECT_DIR)/Entropy/Argon2/**",
+				);
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -313,6 +467,10 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.1;
 				MARKETING_VERSION = 1.0;
+				OTHER_CFLAGS = (
+					"-D_POSIX_THREADS",
+					"-DNO_AVX2",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.prism.Entropy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -322,9 +480,77 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Argon2/Entropy-Bridging-Header.h";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 26.1;
+			};
+			name = Release;
+		};
+		B0BCFEAA2EE41D020071DD5C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7988L8J3ZQ;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Entropy/Argon2/blake2/**",
+					"$(PROJECT_DIR)/Entropy/Argon2/**",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				MACOSX_DEPLOYMENT_TARGET = 26.1;
+				MARKETING_VERSION = 1.0;
+				OTHER_CFLAGS = "-D_POSIX_THREADS";
+				PRODUCT_BUNDLE_IDENTIFIER = com.prism.EntropyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "Argon2/Entropy-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Entropy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Entropy";
+				XROS_DEPLOYMENT_TARGET = 26.1;
+			};
+			name = Debug;
+		};
+		B0BCFEAB2EE41D020071DD5C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7988L8J3ZQ;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Entropy/Argon2/blake2/**",
+					"$(PROJECT_DIR)/Entropy/Argon2/**",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				MACOSX_DEPLOYMENT_TARGET = 26.1;
+				MARKETING_VERSION = 1.0;
+				OTHER_CFLAGS = "-D_POSIX_THREADS";
+				PRODUCT_BUNDLE_IDENTIFIER = com.prism.EntropyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "Argon2/Entropy-Bridging-Header.h";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Entropy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Entropy";
 				XROS_DEPLOYMENT_TARGET = 26.1;
 			};
 			name = Release;
@@ -346,6 +572,15 @@
 			buildConfigurations = (
 				B0BCFE632EE418420071DD5C /* Debug */,
 				B0BCFE642EE418420071DD5C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B0BCFEA92EE41D020071DD5C /* Build configuration list for PBXNativeTarget "EntropyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B0BCFEAA2EE41D020071DD5C /* Debug */,
+				B0BCFEAB2EE41D020071DD5C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
