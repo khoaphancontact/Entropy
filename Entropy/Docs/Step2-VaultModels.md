@@ -3,9 +3,9 @@ STEP 2 — VAULT MODELS IMPLEMENTATION GUIDE
 MILESTONES:
 [x] Milestone A — Vault File Header + Versioning
 [x] Milestone B — VaultEntry + VaultEntryMetadata + EntryFieldTypes
-[] Milestone C — VaultFolder Structure
-[] Milestone D — OTPBlock Model
-[] Milestone E — DecryptedVault + DecryptedVaultEntryåç
+[x] Milestone C — VaultFolder Structure
+[x] Milestone D — OTPBlock Model
+[x] Milestone E — DecryptedVault + DecryptedVaultEntry
 [] Milestone F — VaultSerialization (encode/decode)
 [] Milestone G — VaultModelV1 (Full On-Disk Format)
 [] Milestone H — VaultEntrySecurityInfo (Score)

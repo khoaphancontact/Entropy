@@ -13,6 +13,11 @@ Implement loading, saving, unlocking, encrypting, decrypting, adding/removing fo
 
 Step 4 — VaultContainerManager (Multi-Vault System)
 Manage creation, listing, renaming, deleting, metadata, and sorting of multiple vault containers, including secure handling of VaultContainer.json.
+– Support optional decoy vault mode:
+Allow distinct passwords to unlock distinct vault containers (decoy vs primary).
+Container metadata must be encrypted and keyed per password.
+A password that only maps to a decoy vault must not reveal the existence of any other vaults.
+Unlock flow must treat “wrong password” and “password for another (hidden) vault” indistinguishably unless that vault is explicitly associated with the password.
 
 Step 5 — Folder System (User Organization Layer)
 Implement folder creation, deletion, renaming, ordering, and enforcement of stable folder IDs while preventing orphaned entries and guaranteeing an “Unfiled” fallback.
@@ -29,6 +34,10 @@ Implement migration from older vault formats to the current version, including f
 
 Step 9 — Security Hardening
 Add unlock rate-limiting, clipboard clearing, auto-locking, tamper detection, integrity verification, secure logging, sensitive wordlist integrity checks, and Secure Enclave–based anti-replay protections.
+– Document and enforce threat model for decoy vaults:
+No cross-vault leakage in logs, recents, or UI when decoy is active.
+Ensure backups/exports don’t accidentally reveal multiple vaults.
+Clarify limitations of plausible deniability in docs.
 
 Step 10 — Documentation & Developer Tools
 Produce complete documentation: Security Model, Vault Format Specification, API docs, ViewModel READMEs, lint rules, test vault generators, debugging utilities, and full performance benchmarks.

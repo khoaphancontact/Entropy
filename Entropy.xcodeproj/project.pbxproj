@@ -30,7 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B03BE8112EE62B130084932B /* Entropy.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = file; path = Entropy.xctestplan; sourceTree = "<group>"; };
+		B03BE8112EE62B130084932B /* Entropy.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Entropy.xctestplan; sourceTree = "<group>"; };
 		B0BCFE572EE418410071DD5C /* Entropy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Entropy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0BCFEA32EE41D020071DD5C /* EntropyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EntropyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0BCFEC02EE427930071DD5C /* argon2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = argon2.c; sourceTree = "<group>"; };
