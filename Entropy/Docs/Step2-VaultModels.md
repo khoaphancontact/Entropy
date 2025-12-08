@@ -277,14 +277,40 @@ strength: PasswordStrength
 score: Int?
 entropyBits: Double?
 lastEvaluated: Date
+Password detection (for reused passwords)
+passwordFingerprint: Data?
+Encrypted SHA-256 hash of the decrypted password
+Stored inside the vault, never plaintext
+Used to efficiently detect reused passwords without decrypting the entire vault repeatedly
+Computed only in VaultManager.unlockVault() during Milestone E
+Optional for backward compatibility
+
+🔐 Fingerprint Rules
+Must be computed from decrypted password bytes inside DecryptedVaultEntry
+Must use a strong, stable hash (SHA-256)
+Must be stored encrypted along with other security info (AES-GCM inside VaultEntry)
+Must never leave the vault or be exposed in plaintext form
+May be empty (nil) for newly created entries until evaluation is run
+Used in Vault Hardening (Milestone I) to detect:
+duplicate passwords
+reused passwords across folders
+cross-entry security risks
 
 Requirements:
 • Must be Codable
 • Must support default values when score not computed
+• Struct must be fully Codable + Equatable + Sendable
+• Must support default values for entries where scoring has not yet been evaluated
+• Must deserialize correctly even when passwordFingerprint is missing (older vaults)
+• Must be stable and version-safe (frozen layout after release)
 
 Tests:
-encode/decode
-default init
+encode/decode round-trip
+default initializer covers required fields
+missing passwordFingerprint decodes successfully
+passwordFingerprint persists correctly when present
+two identical fingerprints detect reuse
+different passwords produce different fingerprints
 
 ✔️ Milestone I — Vault Model Hardening
 
