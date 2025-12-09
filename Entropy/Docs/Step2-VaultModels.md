@@ -6,10 +6,10 @@ MILESTONES:
 [x] Milestone C — VaultFolder Structure
 [x] Milestone D — OTPBlock Model
 [x] Milestone E — DecryptedVault + DecryptedVaultEntry
-[] Milestone F — VaultSerialization (encode/decode)
-[] Milestone G — VaultModelV1 (Full On-Disk Format)
-[] Milestone H — VaultEntrySecurityInfo (Score)
-[] Milestone I — Vault Model Hardening
+[x] Milestone F — VaultSerialization (encode/decode)
+[x] Milestone G — VaultModelV1 (Full On-Disk Format)
+[x] Milestone H — VaultEntrySecurityInfo (Score)
+[x] Milestone I — Vault Model Hardening
 [] Milestone J — VaultAutofillAdapter (Real Implementation)
 [] Milestone K — VaultModel Benchmarks
 
