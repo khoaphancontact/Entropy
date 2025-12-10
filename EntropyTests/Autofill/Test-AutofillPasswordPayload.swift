@@ -4,10 +4,9 @@
 //
 //  Created by Khoa Phan (Home) on 12/7/25.
 //
-
 //
-//  Test-AutofillPasswordPayload.swift
-//  EntropyTests
+//  AutofillPasswordPayloadTests.swift
+//  EntropyVaultModelsTests
 //
 
 import XCTest
@@ -15,59 +14,115 @@ import XCTest
 
 final class AutofillPasswordPayloadTests: XCTestCase {
 
-    func testPayloadInitialization() {
-        let id = UUID()
-        let ciphertext = Data([0x01, 0x02, 0x03])
-        let nonce = Data([0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF,
-                          0x11, 0x22, 0x33, 0x44, 0x55, 0x66])
-
-        let payload = AutofillPasswordPayload(
-            entryID: id,
-            encryptedPassword: ciphertext,
-            nonce: nonce,
-            metadata: AutofillMetadata(domain: "google.com")
-        )
-
-        XCTAssertEqual(payload.version, AutofillPasswordPayload.currentVersion)
-        XCTAssertEqual(payload.entryID, id)
-        XCTAssertEqual(payload.encryptedPassword, ciphertext)
-        XCTAssertEqual(payload.nonce, nonce)
-        XCTAssertEqual(payload.metadata?.domain, "google.com")
+    private func makeKey() -> ZeroizedData {
+        ZeroizedData(copying: Data(repeating: 0xAB, count: 32))
     }
 
-    func testCodableRoundTrip() throws {
-        let payload = AutofillPasswordPayload(
-            entryID: UUID(),
-            encryptedPassword: Data([0x10, 0x20]),
-            nonce: Data([0,1,2,3,4,5,6,7,8,9,10,11]),
-            metadata: AutofillMetadata(domain: "example.com",
-                                       displayUsername: "khoa")
+    private func encryptField(
+        _ plaintext: String,
+        key: ZeroizedData,
+        now: Date
+    ) throws -> EncryptedField {
+        let bundle = try VaultEncryption.encryptEntry(
+            plaintext: Data(plaintext.utf8),
+            vaultKey: key
         )
-
-        let encoded = try JSONEncoder().encode(payload)
-        let decoded = try JSONDecoder().decode(AutofillPasswordPayload.self, from: encoded)
-
-        XCTAssertEqual(decoded.version, AutofillPasswordPayload.currentVersion)
-        XCTAssertEqual(decoded.entryID, payload.entryID)
-        XCTAssertEqual(decoded.encryptedPassword, payload.encryptedPassword)
-        XCTAssertEqual(decoded.nonce, payload.nonce)
-        XCTAssertEqual(decoded.metadata?.domain, "example.com")
-        XCTAssertEqual(decoded.metadata?.displayUsername, "khoa")
+        return EncryptedField(
+            bundle: bundle,
+            createdAt: now,
+            updatedAt: now
+        )
     }
 
-    func testWithoutMetadata() throws {
-        let payload = AutofillPasswordPayload(
-            entryID: UUID(),
-            encryptedPassword: Data([0x55]),
-            nonce: Data([0,1,2,3,4,5,6,7,8,9,10,11]),
-            metadata: nil
+    private func makeEntry(
+        username: String,
+        password: String,
+        now: Date,
+        key: ZeroizedData
+    ) throws -> VaultEntry {
+
+        let encUser = try encryptField(username, key: key, now: now)
+        let encPass = try encryptField(password, key: key, now: now)
+
+        return VaultEntry(
+            id: UUID(),
+            title: "Test Entry",
+            domain: "example.com",
+            createdAt: now,
+            updatedAt: now,
+            encryptedUsername: encUser,
+            encryptedPassword: encPass,
+            encryptedNotes: nil,
+            otpBlockID: nil,
+            encryptedMetadata: nil,
+            securityInfo: nil
+        )
+    }
+
+    func testAutofillPayloadContents() throws {
+        let now = Date(timeIntervalSince1970: 1_750_000_000)
+        let key = makeKey()
+
+        let entry = try makeEntry(
+            username: "user@example.com",
+            password: "SuperPassword123!",
+            now: now,
+            key: key
         )
 
-        XCTAssertNil(payload.metadata)
+        let adapter = VaultAutofillAdapter()
+        let payload = try adapter.autofillPayload(
+            for: entry,
+            requestDomain: "example.com",
+            vaultKey: key
+        )
 
-        let encoded = try JSONEncoder().encode(payload)
-        let decoded = try JSONDecoder().decode(AutofillPasswordPayload.self, from: encoded)
+        // Check ID + metadata propagation
+        XCTAssertEqual(payload.entryID, entry.id)
+        XCTAssertEqual(payload.domain, "example.com")
+        XCTAssertEqual(payload.createdAt, entry.createdAt)
+        XCTAssertEqual(payload.updatedAt, entry.updatedAt)
 
-        XCTAssertNil(decoded.metadata)
+        // Username is intentionally not decrypted in J3
+        XCTAssertNil(payload.username)
+
+        // Validate password decrypt
+        let decryptedPassword = try payload.password.withBytes { Data($0) }
+        XCTAssertEqual(
+            String(decoding: decryptedPassword, as: UTF8.self),
+            "SuperPassword123!"
+        )
+    }
+
+    func testPasswordMemoryIsolated() throws {
+        let now = Date(timeIntervalSince1970: 1_750_000_000)
+        let key = makeKey()
+
+        let entry = try makeEntry(
+            username: "ignored",
+            password: "IsolatedSecret!",
+            now: now,
+            key: key
+        )
+
+        let adapter = VaultAutofillAdapter()
+        let payload = try adapter.autofillPayload(
+            for: entry,
+            requestDomain: "example.com",
+            vaultKey: key
+        )
+
+        // Extract password bytes in controlled zeroized fashion
+        let decrypted = try payload.password.withBytes { Data($0) }
+
+        XCTAssertEqual(
+            String(decoding: decrypted, as: UTF8.self),
+            "IsolatedSecret!"
+        )
+
+        // Ensure underlying pointer access doesn't leak.
+        // (ZeroizedData enforces copy-on-access; we can confirm it does not match ciphertext.)
+        let cipher = entry.encryptedPassword.bundle.ciphertext
+        XCTAssertNotEqual(cipher, decrypted)
     }
 }

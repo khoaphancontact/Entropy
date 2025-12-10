@@ -10,8 +10,8 @@ MILESTONES:
 [x] Milestone G — VaultModelV1 (Full On-Disk Format)
 [x] Milestone H — VaultEntrySecurityInfo (Score)
 [x] Milestone I — Vault Model Hardening
-[] Milestone J — VaultAutofillAdapter (Real Implementation)
-[] Milestone K — VaultModel Benchmarks
+[x] Milestone J — VaultAutofillAdapter (Real Implementation)
+[x] Milestone K — VaultModel Benchmarks
 
 (After completing Step 1: SecurityKit)
 
@@ -346,6 +346,122 @@ payload generation
 wrong domain reject
 missing password reject
 tamper detection
+
+✅ Milestone J — VaultAutofillAdapter (Real Implementation)
+
+J1 — Domain Matching Engine
+Before decrypting anything, the autofill system must verify:
+URL → registered domain
+VaultEntry.domain matches request domain
+Use Apple's domain parser or fallback to your own heuristic
+Prevent phishing mismatches (e.g., apple.com.evil.co)
+
+Deliverables:
+AutofillDomainMatcher.swift
+
+Function:
+func matches(entryDomain: String, requestDomain: String) -> Bool
+
+Rejects subdomain mismatches unless configured to allow them.
+
+Tests:
+exact match
+subdomain allowed / disallowed
+punycode / unicode domain test (optional)
+phishing-like domain rejection
+
+J2 — Partial Decryption of Password Only
+Autofill must never decrypt more than what is needed.
+
+This step produces:
+func decryptPasswordOnly(entry: VaultEntry, vaultKey: ZeroizedData) throws -> ZeroizedData
+
+Rules:
+Username stays encrypted
+Notes stay encrypted
+Metadata stays encrypted
+OTP stays encrypted
+
+Deliverables:
+Password-only decrypt helper in VaultEntry+PartialDecrypt.swift
+
+Tests:
+password decrypt succeeds
+username stays encrypted
+corrupted ciphertext throws
+
+J3 — Build AutofillPasswordPayload
+
+Take decrypted password and entry metadata, and produce:
+AutofillPasswordPayload(
+    username: ZeroizedData?,
+    password: ZeroizedData,
+    domain: String,
+    createdAt: Date,
+    updatedAt: Date,
+    entryID: UUID
+)
+
+
+Deliverables:
+VaultAutofillAdapter.swift with function:
+
+func makePayload(
+    for entry: VaultEntry,
+    domain: String,
+    vaultKey: ZeroizedData
+) throws -> AutofillPasswordPayload
+
+
+Rules:
+Must only hold password in ZeroizedData
+Must use AutofillEphemeralMemory for any temporary buffers
+Must clear intermediate buffers on exit
+
+Tests:
+payload generation success
+correct dates / id propagation
+
+J4 — Tamper Detection & Validation
+
+Before emitting a payload, the adapter must:
+Recheck IntegrityChecks on ciphertext bundle inside the entry
+Verify the VaultEntry has all required encrypted fields
+Reject missing password field
+Reject invalid nonce, invalid tag, malformed ciphertext
+
+Deliverables:
+Extend adapter with:
+func validateEntryBeforeAutofill(_ entry: VaultEntry) throws
+
+Tests:
+missing password → reject
+wrong nonce length → reject
+wrong ciphertext → reject
+IntegrityChecks mismatch → reject
+
+J5 — Final Integration: VaultAutofillAdapter API
+
+Create the final adapter struct:
+public struct VaultAutofillAdapter {
+    public func autofillPayload(
+        for entry: VaultEntry,
+        requestDomain: String,
+        vaultKey: ZeroizedData
+    ) throws -> AutofillPasswordPayload {
+        // J1: domain match check
+        // J4: structural validation
+        // J2: partial decrypt password only
+        // J3: build payload 
+    }
+}
+
+
+Tests:
+wrong domain reject
+missing password reject
+tamper detection reject
+valid payload success
 
 ✔️ Milestone K — VaultModel Benchmarks (Optional but Recommended)
 

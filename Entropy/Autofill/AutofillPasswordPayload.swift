@@ -4,55 +4,50 @@
 //
 //  Created by Khoa Phan (Home) on 12/7/25.
 //
-
 //
 //  AutofillPasswordPayload.swift
-//  Entropy
-//
-//  Minimal encrypted payload for Autofill extension.
-//  Never contains plaintext. Designed for IPC between app and extension.
+//  EntropyVaultModels
 //
 
 import Foundation
 
-/// A minimal, hardened representation of a vault entry's password payload
-/// intended solely for secure IPC between the main app and the Autofill extension.
+/// Decrypted, in-memory payload used for Autofill flows.
 ///
-/// This structure *never* contains a plaintext password.
-/// All sensitive material is inside `encryptedPassword` which must be
-/// decrypted only inside the extension using VaultEncryption + ZeroizedData.
-public struct AutofillPasswordPayload: Codable, Sendable {
+/// This NEVER leaves the process and should only be stored in
+/// AutofillEphemeralMemory or similarly short-lived contexts.
+public struct AutofillPasswordPayload: Sendable {
 
-    /// Payload format version — allows forward migration.
-    public static let currentVersion = 1
-
-    /// Monotonic version for future-proofing.
-    public let version: Int
-
-    /// The vault entry's unique identifier.
+    /// Stable ID of the vault entry this payload came from.
     public let entryID: UUID
 
-    /// The domain this payload is valid for (optional but highly recommended).
-    /// Used for matching autofill requests to stored credentials.
-    public let metadata: AutofillMetadata?
+    /// Optional decrypted username (may be nil if not needed or not decrypted).
+    public let username: ZeroizedData?
 
-    /// The encrypted password bytes (ciphertext + tag).
-    /// This is the output of VaultEncryption or EncryptedPayload.
-    public let encryptedPassword: Data
+    /// Decrypted password (wrapped in ZeroizedData).
+    public let password: ZeroizedData
 
-    /// The 12-byte AES-GCM nonce.
-    public let nonce: Data
+    /// Domain the payload is intended for (already validated by caller or J1).
+    public let domain: String
+
+    /// When this entry was originally created.
+    public let createdAt: Date
+
+    /// When this entry was last modified.
+    public let updatedAt: Date
 
     public init(
         entryID: UUID,
-        encryptedPassword: Data,
-        nonce: Data,
-        metadata: AutofillMetadata? = nil
+        username: ZeroizedData?,
+        password: ZeroizedData,
+        domain: String,
+        createdAt: Date,
+        updatedAt: Date
     ) {
-        self.version = Self.currentVersion
         self.entryID = entryID
-        self.encryptedPassword = encryptedPassword
-        self.nonce = nonce
-        self.metadata = metadata
+        self.username = username
+        self.password = password
+        self.domain = domain
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
     }
 }

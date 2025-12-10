@@ -11,6 +11,7 @@
 //
 
 import Foundation
+import CryptoKit
 
 // MARK: - Supported Algorithms
 
@@ -167,5 +168,58 @@ public extension OTPMetadata {
         let payload = try encoder.encode(metadata)
         let bundle = try VaultEncryption.encryptEntry(plaintext: payload, vaultKey: vaultKey)
         return EncryptedField(bundle: bundle, createdAt: now, updatedAt: now)
+    }
+}
+
+// MARK: - OTP Generation (TOTP)
+
+public extension OTPBlock {
+
+    /// Generate a TOTP code at a given timestamp.
+    func generateOTP(at date: Date, vaultKey: ZeroizedData) throws -> String {
+
+        // 1. Decrypt Base32 secret
+        let secretData = try decryptSecret(vaultKey: vaultKey)
+        let rawSecret = try secretData.withBytes { Data($0) }
+
+        // 2. Compute time-step counter
+        let timestamp = Int(date.timeIntervalSince1970)
+        let counter = timestamp / period
+
+        var counterBigEndian = UInt64(counter).bigEndian
+        let counterData = Data(bytes: &counterBigEndian, count: MemoryLayout<UInt64>.size)
+
+        // 3. Compute HMAC using the configured algorithm
+        let macData: Data
+        switch algorithm {
+        case .sha1:
+            let mac = HMAC<Insecure.SHA1>.authenticationCode(for: counterData,
+                                                             using: SymmetricKey(data: rawSecret))
+            macData = Data(mac)
+
+        case .sha256:
+            let mac = HMAC<SHA256>.authenticationCode(for: counterData,
+                                                      using: SymmetricKey(data: rawSecret))
+            macData = Data(mac)
+
+        case .sha512:
+            let mac = HMAC<SHA512>.authenticationCode(for: counterData,
+                                                      using: SymmetricKey(data: rawSecret))
+            macData = Data(mac)
+        }
+
+        // 4. Dynamic truncation (RFC 4226 §5.3)
+        let offset = Int(macData.last! & 0x0F)
+
+        let truncatedValue = macData.withUnsafeBytes { ptr -> UInt32 in
+            let slice = ptr.baseAddress!.advanced(by: offset)
+            return slice.load(as: UInt32.self).bigEndian & 0x7FFF_FFFF
+        }
+
+        // 5. Reduce to the correct number of digits
+        let modulus = UInt32(pow(10, Double(digits)))
+        let otp = truncatedValue % modulus
+
+        return String(format: "%0*u", digits, otp)
     }
 }
