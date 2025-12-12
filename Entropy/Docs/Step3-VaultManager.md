@@ -23,7 +23,7 @@ This is the most security-critical layer in your entire app.
 Mistakes here get people screwed in real life. We get this right.
 
 MILESTONES
-[] Milestone A — Vault File Management (Paths, Creation, Existence Checks)
+[x] Milestone A — Vault File Management (Paths, Creation, Existence Checks)
 [] Milestone B — Unlock Engine (Password → VaultKey → DecryptedVault)
 [] Milestone C — Entry Lifecycle (Create, Update, Delete)
 [] Milestone D — Folder Lifecycle (Create, Rename, Delete, Ordering)
@@ -314,3 +314,4 @@ ScoringTests
 IntegrityTests
 WipeTests
 FastUnlockTests
+

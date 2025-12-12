@@ -46,33 +46,9 @@
 		B0BCFEDD2EE4BEC20071DD5C /* encoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = encoding.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B0355FCA2EE9EAC800B59C5F /* Exceptions for "Entropy" folder in "Entropy" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Docs/Step3-VaultManager.md",
-			);
-			target = B0BCFE562EE418410071DD5C /* Entropy */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		B0355FCB2EE9EAC800B59C5F /* Exceptions for "Entropy" folder in "Compile Sources" phase from "Entropy" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = B0BCFE532EE418410071DD5C /* Sources */;
-			membershipExceptions = (
-				"Docs/Step3-VaultManager.md",
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B0BCFE592EE418410071DD5C /* Entropy */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				B0355FCA2EE9EAC800B59C5F /* Exceptions for "Entropy" folder in "Entropy" target */,
-				B0355FCB2EE9EAC800B59C5F /* Exceptions for "Entropy" folder in "Compile Sources" phase from "Entropy" target */,
-			);
 			path = Entropy;
 			sourceTree = "<group>";
 		};

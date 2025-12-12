@@ -7,6 +7,13 @@
 
 //
 //  OTPBlock.swift
+//  Entropy
+//
+//  Created by Khoa Phan (Home) on 12/8/25.
+//
+
+//
+//  OTPBlock.swift
 //  EntropyVaultModels
 //
 
@@ -30,6 +37,7 @@ public enum OTPBlockError: Error, Equatable {
     case invalidCiphertext
     case missingCiphertext
     case metadataDecodeFailed
+    case generationFailed
 }
 
 // MARK: - OTP Metadata (Encrypted)
@@ -60,7 +68,7 @@ public struct OTPBlock: Codable, Equatable, Identifiable, Sendable {
     public let digits: Int
     public let period: Int
 
-    /// AES-GCM encrypted Base32 secret.
+    /// AES-GCM encrypted TOTP secret (binary key, not Base32 string).
     public let encryptedSecret: EncryptedField
 
     /// Optional encrypted OTP metadata.
@@ -171,14 +179,58 @@ public extension OTPMetadata {
     }
 }
 
+// MARK: - Internal HMAC Helpers
+
+private func hmacSHA1(key: Data, message: Data) -> Data {
+    // Manual HMAC-SHA1 (Insecure.SHA1) because CryptoKit doesn’t provide HMAC<Insecure.SHA1>
+    let blockSize = 64 // SHA-1 block size
+
+    var key = key
+    if key.count > blockSize {
+        key = Data(Insecure.SHA1.hash(data: key))
+    }
+    if key.count < blockSize {
+        key.append(contentsOf: repeatElement(0, count: blockSize - key.count))
+    }
+
+    let oKeyPad = Data(key.map { $0 ^ 0x5c })
+    let iKeyPad = Data(key.map { $0 ^ 0x36 })
+
+    let inner = Insecure.SHA1.hash(data: iKeyPad + message)
+    let outer = Insecure.SHA1.hash(data: oKeyPad + Data(inner))
+
+    return Data(outer) // Always 20 bytes
+}
+
+private func hmacSHA256(key: Data, message: Data) -> Data {
+    let mac = HMAC<SHA256>.authenticationCode(
+        for: message,
+        using: SymmetricKey(data: key)
+    )
+    return Data(mac) // 32 bytes
+}
+
+private func hmacSHA512(key: Data, message: Data) -> Data {
+    let mac = HMAC<SHA512>.authenticationCode(
+        for: message,
+        using: SymmetricKey(data: key)
+    )
+    return Data(mac) // 64 bytes
+}
+
 // MARK: - OTP Generation (TOTP)
 
 public extension OTPBlock {
 
     /// Generate a TOTP code at a given timestamp.
+    ///
+    /// - Important: `encryptedSecret` must contain the *binary key bytes*, not a Base32 string.
     func generateOTP(at date: Date, vaultKey: ZeroizedData) throws -> String {
 
-        // 1. Decrypt Base32 secret
+        // 0. Validate basic config first.
+        try validate()
+
+        // 1. Decrypt secret (ZeroizedData → Data)
         let secretData = try decryptSecret(vaultKey: vaultKey)
         let rawSecret = try secretData.withBytes { Data($0) }
 
@@ -189,34 +241,40 @@ public extension OTPBlock {
         var counterBigEndian = UInt64(counter).bigEndian
         let counterData = Data(bytes: &counterBigEndian, count: MemoryLayout<UInt64>.size)
 
-        // 3. Compute HMAC using the configured algorithm
+        // 3. Compute HMAC (MAC length depends on algorithm)
         let macData: Data
         switch algorithm {
         case .sha1:
-            let mac = HMAC<Insecure.SHA1>.authenticationCode(for: counterData,
-                                                             using: SymmetricKey(data: rawSecret))
-            macData = Data(mac)
-
+            macData = hmacSHA1(key: rawSecret, message: counterData)   // 20 bytes
         case .sha256:
-            let mac = HMAC<SHA256>.authenticationCode(for: counterData,
-                                                      using: SymmetricKey(data: rawSecret))
-            macData = Data(mac)
-
+            macData = hmacSHA256(key: rawSecret, message: counterData) // 32 bytes
         case .sha512:
-            let mac = HMAC<SHA512>.authenticationCode(for: counterData,
-                                                      using: SymmetricKey(data: rawSecret))
-            macData = Data(mac)
+            macData = hmacSHA512(key: rawSecret, message: counterData) // 64 bytes
         }
 
-        // 4. Dynamic truncation (RFC 4226 §5.3)
+        guard !macData.isEmpty else {
+            throw OTPBlockError.generationFailed
+        }
+
+        // 4. Dynamic truncation (RFC 4226 §5.3), SAFE (no misaligned loads)
         let offset = Int(macData.last! & 0x0F)
 
-        let truncatedValue = macData.withUnsafeBytes { ptr -> UInt32 in
-            let slice = ptr.baseAddress!.advanced(by: offset)
-            return slice.load(as: UInt32.self).bigEndian & 0x7FFF_FFFF
+        // Ensure offset + 4 is in range
+        guard offset >= 0, offset + 4 <= macData.count else {
+            throw OTPBlockError.generationFailed
         }
 
-        // 5. Reduce to the correct number of digits
+        let bytes = macData[offset ..< offset + 4]
+        // bytes.count == 4 guaranteed here
+        let number =
+            (UInt32(bytes[bytes.startIndex]) << 24) |
+            (UInt32(bytes[bytes.startIndex.advanced(by: 1)]) << 16) |
+            (UInt32(bytes[bytes.startIndex.advanced(by: 2)]) << 8)  |
+            UInt32(bytes[bytes.startIndex.advanced(by: 3)])
+
+        let truncatedValue = number & 0x7FFF_FFFF
+
+        // 5. Reduce to correct number of digits
         let modulus = UInt32(pow(10, Double(digits)))
         let otp = truncatedValue % modulus
 
