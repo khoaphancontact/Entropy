@@ -64,8 +64,15 @@ public enum Argon2 {
     private static let useSwiftFallback: Bool = {
         #if DEBUG
         return true
+        #elseif canImport(XCTest)
+        // XCTest may not set DEBUG in some CI configurations. Use multiple hints to detect test execution.
+        let env = ProcessInfo.processInfo.environment
+        if env["XCTestConfigurationFilePath"] != nil || env["XCTestSessionIdentifier"] != nil {
+            return true
+        }
+        return NSClassFromString("XCTestCase") != nil
         #else
-        return ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        return false
         #endif
     }()
 
