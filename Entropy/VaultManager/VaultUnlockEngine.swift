@@ -109,11 +109,11 @@ public final class VaultUnlockEngine {
             header = decoded.header
             bundle = decoded.ciphertext
             Self.debugLog("[VaultUnlock] decoded header (version: \(header.vaultVersion)) and ciphertext")
-        } catch let headerError as VaultFileHeaderError {
-            Self.debugLog("[VaultUnlock] failed header decode (VaultFileHeaderError): \(headerError)")
+        } catch is VaultFileHeaderError {
+            Self.debugLog("[VaultUnlock] failed header decode (VaultFileHeaderError)")
             throw VaultUnlockError.corruptedVault
-        } catch let serializationError as VaultSerializationError {
-            Self.debugLog("[VaultUnlock] failed vault serialization decode: \(serializationError)")
+        } catch is VaultSerializationError {
+            Self.debugLog("[VaultUnlock] failed vault serialization decode")
             throw VaultUnlockError.corruptedVault
         } catch {
             Self.debugLog("[VaultUnlock] unexpected decode error: \(error)")

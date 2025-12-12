@@ -56,25 +56,12 @@ public enum Argon2Error: Error, Equatable {
 
 public enum Argon2 {
 
+    #if DEBUG
     /// When true, derivations are handled purely in Swift to avoid C bridge allocator issues during tests.
-    ///
-    /// - DEBUG builds always enable the fallback.
-    /// - For release test runs (where `DEBUG` may be unset), we still enable it whenever XCTest is active
-    ///   to keep CI stable and bypass the C bridge.
-    private static let useSwiftFallback: Bool = {
-        #if DEBUG
-        return true
-        #elseif canImport(XCTest)
-        // XCTest may not set DEBUG in some CI configurations. Use multiple hints to detect test execution.
-        let env = ProcessInfo.processInfo.environment
-        if env["XCTestConfigurationFilePath"] != nil || env["XCTestSessionIdentifier"] != nil {
-            return true
-        }
-        return NSClassFromString("XCTestCase") != nil
-        #else
-        return false
-        #endif
-    }()
+    private static let useSwiftFallback = true
+    #else
+    private static let useSwiftFallback = false
+    #endif
 
     /// Derive a key using a randomly generated salt.
     public static func derive(password: Data, params: Argon2Params) throws -> (key: Data, salt: Data) {
@@ -90,9 +77,11 @@ public enum Argon2 {
         guard salt.count == params.saltLength else {
             throw Argon2Error.invalidSaltLength
         }
+#if DEBUG
         if useSwiftFallback {
             return try swiftFallback(password: password, salt: salt, params: params)
         }
+#endif
         return try argon2id(password: password, salt: salt, params: params)
     }
 
@@ -164,6 +153,7 @@ public enum Argon2 {
         return Data(bytes: outPtr, count: outputLength)
     }
 
+    #if DEBUG
     // MARK: - Test Fallback (Debug-only)
 
     /// Pure Swift fallback to avoid allocator crashes in test targets.
@@ -207,6 +197,7 @@ public enum Argon2 {
 
     /// Exposed for tests to assert that the fallback is engaged in DEBUG builds.
     static var isUsingSwiftFallbackForTests: Bool { useSwiftFallback }
+    #endif
 }
 
 // MARK: - C Binding
