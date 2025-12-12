@@ -101,15 +101,6 @@ public final class VaultUnlockEngine {
             throw VaultUnlockError.corruptedVault
         }
 
-        // If the raw data is shorter than the minimum header wrapper size, fail fast to avoid
-        // any lower-level parsing work that could trigger allocator issues in CI when working
-        // with intentionally corrupted blobs.
-        let minimumHeaderSize = VaultFileHeader.magic.count + 1 + MemoryLayout<UInt32>.size
-        guard fileData.count >= minimumHeaderSize else {
-            Self.debugLog("[VaultUnlock] file too small to contain header (\(fileData.count) bytes)")
-            throw VaultUnlockError.corruptedVault
-        }
-
         // 2) Decode header + ciphertext (structural + integrity validation)
         let header: VaultFileHeader
         let bundle: VaultCiphertext
@@ -118,11 +109,11 @@ public final class VaultUnlockEngine {
             header = decoded.header
             bundle = decoded.ciphertext
             Self.debugLog("[VaultUnlock] decoded header (version: \(header.vaultVersion)) and ciphertext")
-        } catch let headerError as VaultFileHeaderError {
-            Self.debugLog("[VaultUnlock] failed header decode (VaultFileHeaderError): \(headerError)")
+        } catch is VaultFileHeaderError {
+            Self.debugLog("[VaultUnlock] failed header decode (VaultFileHeaderError)")
             throw VaultUnlockError.corruptedVault
-        } catch let serializationError as VaultSerializationError {
-            Self.debugLog("[VaultUnlock] failed vault serialization decode: \(serializationError)")
+        } catch is VaultSerializationError {
+            Self.debugLog("[VaultUnlock] failed vault serialization decode")
             throw VaultUnlockError.corruptedVault
         } catch {
             Self.debugLog("[VaultUnlock] unexpected decode error: \(error)")
