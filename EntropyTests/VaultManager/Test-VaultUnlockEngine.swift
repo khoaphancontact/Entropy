@@ -94,6 +94,24 @@ final class VaultUnlockEngineTests: XCTestCase {
 
     // MARK: - Tests
 
+    func testArgon2UsesSwiftFallbackInDebug() throws {
+        #if DEBUG
+        XCTAssertTrue(Argon2.isUsingSwiftFallbackForTests, "Fallback should be enabled for debug/test builds")
+
+        let params = testArgon2Params()
+        let salt = Data(repeating: 0xA5, count: params.saltLength)
+        let password = Data("deterministic".utf8)
+
+        // Pure Swift fallback should be deterministic for the same inputs.
+        let derived1 = try Argon2.derive(password: password, salt: salt, params: params)
+        let derived2 = try Argon2.derive(password: password, salt: salt, params: params)
+
+        XCTAssertEqual(derived1, derived2)
+        #else
+        throw XCTSkip("Swift fallback only expected in debug builds")
+        #endif
+    }
+
     func testUnlockWithCorrectPasswordSucceeds() throws {
         let password = "Correct-Horse-Battery-Staple"
         let (url, bundle, _) = try createTestVault(passwordString: password)
